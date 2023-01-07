@@ -9,15 +9,20 @@ class Blocker:
         self.B_max = b_max
         self.T = time
         self.tries = []
+        # для хранения n элементов, исрользуется O(n) памяти
 
     def append(self, trie):
-        if self.T - self.B_max <= trie <= self.T:
+        # сложность (по времени) вставки O(n)
+        if self.T - 2 * self.B_max <= trie <= self.T:
             self.tries.append(trie)
 
     def analyze(self):
+        # сложность (по времени) сортировки O(n*log(n))
+        # для сортировки встроенными средствами Python необъодимо O(n) памяти
         self.tries.sort()
         block_end = 0
         i_ = self.N
+        # сложностьпо (по времени) обхода n элементного списка O(n)
         while i_ <= len(self.tries):
             if self.tries[i_ - 1] - self.tries[i_ - self.N] < self.P:
                 block_end = self.tries[i_ - 1] + self.B
@@ -28,17 +33,16 @@ class Blocker:
             return None
         return block_end
 
+# по итогу сложность по времени всего алгоритма O(n*log(n))
+# по итогу сложность по памяти всего алгоритма O(n)
 
 if __name__ == '__main__':
     n, p, b, b_max, cur_unix = map(int, input().split())
     bl = Blocker(n, p, b, b_max, cur_unix)
-    line = input()
-    while line:
+    for line in fileinput.input():
         bl.append(int(line))
-        line = input()
-    # for line in fileinput.input():
-    time = bl.analyze()
-    if time is None:
+    end_time = bl.analyze()
+    if end_time is None:
         print("ok")
     else:
-        print(time)
+        print(end_time)
